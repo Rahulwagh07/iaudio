@@ -1,0 +1,27 @@
+/* custom style for scollbar */
+.multitrack-container {
+  overflow: auto;
+  scrollbar-width: thin;
+}
+ 
+.multitrack-container > div[style*="overflow-x: scroll"] {
+  scrollbar-width: thin !important;
+  scrollbar-color:rgb(126 34 206) rgb(218, 206, 218) !important;
+  overflow-x: scroll !important;
+}
+ 
+.multitrack-container > div[style*="overflow-x: scroll"]::-webkit-scrollbar-thumb {
+  background-color: rgb(126 34 206) !important;
+  border-radius: 1px !important;
+}
+
+.multitrack-container > div[style*="overflow-x: scroll"]::-webkit-scrollbar-track {
+  background: rgb(126 34 206) !important;
+  border-radius: 1px !important;
+}
+ 
+/* Hide the timeline When there is no track */
+.timeline-hidden div[part="timeline-wrapper"] {
+  display: none !important;
+}
+ 
