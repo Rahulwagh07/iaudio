@@ -4,7 +4,6 @@ import { nanoid } from 'nanoid';
 
 const useAudioStore = create<AudioStore>((set, get) => ({
   tracks: [],
-  currentTime: 0,
   isPlaying: false,
   activeTrackId: null,
   hasTrackFinished: false,
@@ -25,37 +24,52 @@ const useAudioStore = create<AudioStore>((set, get) => ({
     return newTrackId;
   },
 
-  addPill: (trackId, file) => {
-    const newPill = {
-      id: nanoid(),
-      file,
-      url: URL.createObjectURL(file),
-      startTime: 0,
-      duration: 0,
-      name: file.name
-    };
+  addPills: (trackId: string, files: File[]) => {
+    set(state => {
+      const newPills = files.map((file) => ({
+        id: nanoid(),
+        file,
+        url: URL.createObjectURL(file),
+        startTime: 0,
+        duration: 0,
+        name: file.name
+      }));
 
-    set(state => ({
-      tracks: state.tracks.map(track =>
-        track.id === trackId
-          ? {
-            ...track,
-            pills: [...track.pills, newPill]
+      return {
+        tracks: state.tracks.map(track => {
+          if (track.id === trackId) {
+            return {
+              ...track,
+              pills: [...track.pills, ...newPills]
+            };
           }
-          : track
-      )
-    }));
-
-    return newPill;
+          return track;
+        })
+      };
+    });
   },
+ 
 
-  setWaveSurfer: (trackId, wavesurfer) => set(state => ({
-    tracks: state.tracks.map(track =>
-      track.id === trackId
-        ? { ...track, wavesurfer: wavesurfer || undefined }
-        : track
-    )
-  })),
+  setWaveSurfer: (trackId, wavesurfer) => {
+    set(state => {
+      const trackIndex = state.tracks.findIndex(t => t.id === trackId);
+      if (trackIndex === -1) return state;
+
+      if (state.tracks[trackIndex].wavesurfer === wavesurfer) return state;
+
+      if (state.tracks[trackIndex].wavesurfer && state.tracks[trackIndex].wavesurfer !== wavesurfer) {
+        state.tracks[trackIndex].wavesurfer.destroy();
+      }
+
+      const newTracks = [...state.tracks];
+      newTracks[trackIndex] = {
+        ...newTracks[trackIndex],
+        wavesurfer: wavesurfer || undefined
+      };
+
+      return { tracks: newTracks };
+    }, false);
+  },
 
   playTrack: (trackId: string) => {
     const state = get();
@@ -92,8 +106,6 @@ const useAudioStore = create<AudioStore>((set, get) => ({
     return state.activeTrackId === trackId;
   },
 
-  setCurrentTime: (time: number) => set({ currentTime: time }),
-
   deleteTrack: (trackId: string) => set(state => {
     const filteredTracks = state.tracks.filter(t => t.id !== trackId);
     const updatedTracks = filteredTracks.map((track, index) => ({
@@ -108,7 +120,59 @@ const useAudioStore = create<AudioStore>((set, get) => ({
     }
 
     return newState;
-  })
+  }),
+
+  reorderPills: (trackId: string, fromIndex: number, toIndex: number) => {
+    console.log('Store reorderPills called:', { trackId, fromIndex, toIndex });
+    
+    set(state => {
+      const trackIndex = state.tracks.findIndex(t => t.id === trackId);
+      if (trackIndex === -1) return state;
+
+      const track = state.tracks[trackIndex];
+      const newPills = [...track.pills];
+      const [movedPill] = newPills.splice(fromIndex, 1);
+      newPills.splice(toIndex, 0, movedPill);
+
+      const newTrack = { ...track, pills: newPills };
+      const newTracks = [...state.tracks];
+      newTracks[trackIndex] = newTrack;
+
+      return {
+        ...state,
+        tracks: newTracks
+      };
+    }, false);
+  },
+
+  removePill: (trackId: string, pillId: string) => {
+    set(state => ({
+      tracks: state.tracks.map(track => {
+        if (track.id === trackId) {
+          return {
+            ...track,
+            pills: track.pills.filter(pill => pill.id !== pillId)
+          };
+        }
+        return track;
+      })
+    }));
+  },
+
+  reorderTracks: (fromIndex: number, toIndex: number) => {
+    set(state => {
+      const newTracks = [...state.tracks];
+      const [movedTrack] = newTracks.splice(fromIndex, 1);
+      newTracks.splice(toIndex, 0, movedTrack);
+
+      return {
+        tracks: newTracks.map((track, index) => ({
+          ...track,
+          name: `Track ${index + 1}`
+        }))
+      };
+    }, false);
+  },
 }))
 
 export default useAudioStore

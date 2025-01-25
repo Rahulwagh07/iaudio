@@ -20,8 +20,49 @@
   border-radius: 1px !important;
 }
  
-/* Hide the timeline When there is no track */
+/* Hide timeline when there are no pills */
 .timeline-hidden div[part="timeline-wrapper"] {
   display: none !important;
 }
+ 
+
+.drag-handle {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 20px;
+  height: 20px;
+  cursor: move;
+  z-index: 20;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+  pointer-events: none;
+  background-color: rgb(0 0 0 / 0.3)
+}
+
+ 
+.delete-button {
+  position: absolute;
+  left: 4px;
+  top: 28px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  z-index: 20;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+  pointer-events: none;
+  background-color: rgb(0 0 0 / 0.3)
+}
+ 
+
+
  

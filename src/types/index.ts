@@ -1,4 +1,4 @@
-import MultiTrack from 'wavesurfer-multitrack';
+import MultiTrack from 'wavesurfer-multitrack'
 
 export interface AudioPill {
   id: string;
@@ -17,15 +17,15 @@ export interface AudioTrack {
 
 export interface AudioStore {
   tracks: AudioTrack[]
-  currentTime: number
   isPlaying: boolean
   activeTrackId: string | null
   addTrack: () => string
-  addPill: (trackId: string, file: File) => AudioPill
+  addPills: (trackId: string, files: File[]) => void
   setWaveSurfer: (trackId: string, wavesurfer: MultiTrack | null) => void
   playTrack: (trackId: string) => void
   pauseTrack: (trackId: string) => void
-  setCurrentTime: (time: number) => void
   deleteTrack: (trackId: string) => void
   isTrackPlaying: (trackId: string) => boolean
+  reorderPills: (trackId: string, fromIndex: number, toIndex: number) => void
+  removePill: (trackId: string, pillId: string) => void
 }

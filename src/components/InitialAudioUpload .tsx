@@ -2,33 +2,30 @@ import type React from "react";
 import { useDrop } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
 import useAudioStore from "../store/useAudioStore";
-import { ACCEPTED_TYPES } from "../lib/constant";
+import { handleFileUpload } from "../lib/fileUpload";
 
-export default function FileUpload() {
-  const { addPill, addTrack } = useAudioStore();
+export default function InitialAudioUpload() {
+  const { addPills, addTrack } = useAudioStore();
 
-  const [{ isOver }, drop] = useDrop({
+  const [{ isOver, canDrop }, drop] = useDrop({
     accept: [NativeTypes.FILE],
     drop: (item: { files: FileList }) => {
-      const file = Array.from(item.files).find((file) =>
-        ACCEPTED_TYPES.some((type) => file.name.toLowerCase().endsWith(type))
-      );
-
-      if (file) {
-        const trackId = addTrack();
-        addPill(trackId, file);
-      }
+      const { files } = handleFileUpload(item.files);
+      const trackId = addTrack();
+      addPills(trackId, files);
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
+      canDrop: !!monitor.canDrop(),
     }),
   });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
+    const files = e.target.files;
+    if (files) {
+      const { files: processedFiles } = handleFileUpload(files);
       const trackId = addTrack();
-      addPill(trackId, file);
+      addPills(trackId, processedFiles);
     }
   };
 
@@ -36,7 +33,11 @@ export default function FileUpload() {
     <div
       ref={drop}
       className={`p-12 border-2 border-dashed rounded-xl text-center transition-colors w-full max-w-xl
-        ${isOver ? "border-yellow-400 bg-yellow-400/10" : "border-white/50"}`}
+        ${
+          isOver && canDrop
+            ? "border-yellow-400 bg-yellow-400/10"
+            : "border-white/50"
+        }`}
     >
       <input
         type="file"
@@ -44,6 +45,7 @@ export default function FileUpload() {
         onChange={handleFileChange}
         className="hidden"
         id="file-upload"
+        multiple
       />
       <label
         htmlFor="file-upload"
@@ -52,8 +54,8 @@ export default function FileUpload() {
       >
         Select File
       </label>
-      <p className="mt-4 text-sm text-white/80">
-        Or drag and drop an audio file here
+      <p className="mt-4 text text-white/80">
+        Or drag a file here
       </p>
       <p className="mt-2 text-xs text-white/60">Supported formats: MP3, WAV</p>
     </div>
