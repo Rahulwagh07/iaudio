@@ -100,6 +100,7 @@ export function initVerticalDragging(multitrack: MultiTrack) {
     let startIndex = index;
     let currentIndex = index;
     let totalDy = 0;
+    let startLeft = 0;   
 
     const unsubscribe = makeDraggable(
       dragHandle,
@@ -110,6 +111,7 @@ export function initVerticalDragging(multitrack: MultiTrack) {
         const containerHeight = container.offsetHeight;
 
         container.style.transition = 'none';
+        container.style.left = `${startLeft}px`;
         container.style.transform = `translateY(${totalDy}px)`;
         container.style.zIndex = '1000';
 
@@ -142,6 +144,11 @@ export function initVerticalDragging(multitrack: MultiTrack) {
         isDragging = true;
         dragHandle.style.cursor = 'grabbing';
         container.style.zIndex = '1000';
+        const rect = container.getBoundingClientRect();
+        startLeft = rect.left - (container.offsetParent?.getBoundingClientRect().left || 0);
+        container.style.position = 'relative';
+        container.style.left = `${startLeft}px`;
+
         totalDy = 0;
         startIndex = index;
         currentIndex = index;

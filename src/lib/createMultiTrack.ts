@@ -11,6 +11,7 @@ interface CreateMultiTrackParams {
     reorderPills: (trackId: string, fromIndex: number, toIndex: number) => void;
     removePill: (trackId: string, pillId: string) => void;
     updatePillStartTime: (trackId: string, pillId: string, startTime: number) => void;
+    updateCursorPosition: (wasPlaying: boolean, currentTime: number) => void;
   };
 }
 
@@ -47,13 +48,16 @@ export function createMultiTrack({
   );
 
   container.classList.add("multitrack-container");
-
+  
   callbacks.setWaveSurfer(trackId, instance);
   initVerticalDragging(instance);
-
+   
   // @ts-ignore
   instance.on("reorder-track", ({ fromIndex, toIndex }: { fromIndex: number; toIndex: number }) => {
+    const wasPlaying = instance.isPlaying();
+    const currentTime = instance.getCurrentTime();
     callbacks.reorderPills(trackId, fromIndex, toIndex);
+    callbacks.updateCursorPosition(wasPlaying, currentTime);
   });
 
   // @ts-ignore

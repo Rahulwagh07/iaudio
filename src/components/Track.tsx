@@ -2,7 +2,7 @@ import { useEffect, useRef, memo, useState } from "react";
 import MultiTrack from "wavesurfer-multitrack";
 import useAudioStore from "../store/useAudioStore";
 import { AudioTrack, AudioExportProgress } from "../types";
-import { FaPause, FaPlay} from "react-icons/fa";
+import { FaPause, FaPlay } from "react-icons/fa";
 import { BiX } from "react-icons/bi";
 import "../styles/track.css";
 import AudioDropZone from "./AudioDropZone";
@@ -10,7 +10,7 @@ import { createMultiTrack } from "../lib/createMultiTrack";
 import { createFileInput } from "../lib/fileUpload";
 import { getTotalDuration } from "../lib/trackUtils";
 import { usePlayingState } from "../hooks/usePlayingState";
-import { AudioExporter } from '../lib/audioExport';
+import { AudioExporter } from "../lib/audioExport";
 import { GoUpload, GoDownload } from "react-icons/go";
 import Progress from "./Progress";
 
@@ -23,7 +23,8 @@ const Track = memo(({ track, onDeleteTrack }: TrackProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const multitrackRef = useRef<MultiTrack | null>(null);
   const isPlaying = usePlayingState(multitrackRef);
-  const [exportProgress, setExportProgress] = useState<AudioExportProgress | null>(null);
+  const [exportProgress, setExportProgress] =
+    useState<AudioExportProgress | null>(null);
   const {
     setWaveSurfer,
     addPills,
@@ -53,6 +54,7 @@ const Track = memo(({ track, onDeleteTrack }: TrackProps) => {
           reorderPills,
           removePill,
           updatePillStartTime,
+          updateCursorPosition,
         },
       });
     }
@@ -87,21 +89,19 @@ const Track = memo(({ track, onDeleteTrack }: TrackProps) => {
 
   const handlePlayTrack = () => {
     if (track.pills.length === 0) return;
-
     if (playMode === "All") {
       return;
     }
-
     if (!multitrackRef.current) {
       return;
     }
-
     try {
       const currentTime = multitrackRef.current?.getCurrentTime() || 0;
       const totalDuration = containerRef.current
         ? getTotalDuration(containerRef.current)
         : 0;
-      if (currentTime >= totalDuration) {
+
+      if (currentTime >= totalDuration && totalDuration !== 0) {
         multitrackRef.current?.setTime(0);
       } else {
         multitrackRef.current?.setTime(currentTime);
@@ -131,17 +131,26 @@ const Track = memo(({ track, onDeleteTrack }: TrackProps) => {
 
   const handleExport = async () => {
     if (isExporting || track.pills.length === 0) return;
-
     try {
       setIsExporting(true);
       const exporter = new AudioExporter(setExportProgress);
       await exporter.exportToMp3(track);
     } catch (error) {
-      console.log('failed to export', error);
+      console.log("failed to export", error);
     } finally {
       setIsExporting(false);
       setExportProgress(null);
     }
+  };
+
+  const updateCursorPosition = (wasPlaying: boolean, currentTime: number) => {
+    if (!multitrackRef.current) return;
+    setTimeout(() => {
+      multitrackRef?.current?.setTime(currentTime);
+      if (wasPlaying) {
+        multitrackRef?.current?.play();
+      }
+    }, 100);
   };
 
   return (
@@ -183,7 +192,7 @@ const Track = memo(({ track, onDeleteTrack }: TrackProps) => {
               onClick={handleExport}
               disabled={track.pills.length === 0 || isExporting}
               className={`p-2 rounded-lg bg-purple-800 hover:bg-purple-700 
-                transition-colors ${isExporting && 'cursor-auto'}`}
+                transition-colors ${isExporting && "cursor-auto"}`}
               title="Export as MP3"
             >
               <GoDownload className="w-4 h-4 text-gray-300" />
@@ -198,9 +207,7 @@ const Track = memo(({ track, onDeleteTrack }: TrackProps) => {
         </div>
       </div>
 
-      {exportProgress && (
-        <Progress exportProgress={exportProgress} />
-      )}
+      {exportProgress && <Progress exportProgress={exportProgress} />}
     </>
   );
 });
