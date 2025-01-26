@@ -21,11 +21,22 @@ export default function InitialAudioUpload() {
   });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      const { files: processedFiles } = handleFileUpload(files);
-      const trackId = addTrack();
-      addPills(trackId, processedFiles);
+    try {
+      const files = e.target.files;
+      if (!files || files.length === 0) {
+        console.log("No files selected");
+        return;
+      }
+
+      try {
+        const { files: processedFiles } = handleFileUpload(files);
+        const trackId = addTrack();
+        addPills(trackId, processedFiles);
+      } catch (uploadError) {
+        console.log("Error processing files:", uploadError);
+      }
+    } catch (error) {
+      console.log("Error in file change handler:", error);
     }
   };
 
@@ -54,9 +65,7 @@ export default function InitialAudioUpload() {
       >
         Select File
       </label>
-      <p className="mt-4 text text-white/80">
-        Or drag a file here
-      </p>
+      <p className="mt-4 text text-white/80">Or drag a file here</p>
       <p className="mt-2 text-xs text-white/60">Supported formats: MP3, WAV</p>
     </div>
   );

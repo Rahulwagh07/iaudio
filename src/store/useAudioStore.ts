@@ -1,12 +1,16 @@
 import { create } from 'zustand'
-import { AudioStore } from '../types'
+import { AudioStore, PlayMode } from '../types'
 import { nanoid } from 'nanoid';
+import { getAudioDuration } from '../lib/fileUpload';
 
 const useAudioStore = create<AudioStore>((set, get) => ({
   tracks: [],
   isPlaying: false,
   activeTrackId: null,
   hasTrackFinished: false,
+  volume: 1,
+  playMode: "None" as PlayMode,
+  isExporting: false,
 
   addTrack: () => {
     const newTrackId = nanoid();
@@ -24,18 +28,23 @@ const useAudioStore = create<AudioStore>((set, get) => ({
     return newTrackId;
   },
 
-  addPills: (trackId: string, files: File[]) => {
-    set(state => {
-      const newPills = files.map((file) => ({
-        id: nanoid(),
-        file,
-        url: URL.createObjectURL(file),
-        startTime: 0,
-        duration: 0,
-        name: file.name
-      }));
-
-      return {
+  addPills: async (trackId: string, files: File[]) => {
+    try {
+      const newPills = await Promise.all(
+        files.map(async (file) => {
+          const duration = await getAudioDuration(file);
+          return {
+            id: nanoid(),
+            file,
+            url: URL.createObjectURL(file),
+            startTime: 0,
+            duration,
+            name: file.name
+          };
+        })
+      );
+  
+      set(state => ({
         tracks: state.tracks.map(track => {
           if (track.id === trackId) {
             return {
@@ -45,10 +54,12 @@ const useAudioStore = create<AudioStore>((set, get) => ({
           }
           return track;
         })
-      };
-    });
+      }));
+    } catch (error) {
+      console.log('error adding pills with duration:', error);
+    }
   },
- 
+
 
   setWaveSurfer: (trackId, wavesurfer) => {
     set(state => {
@@ -101,11 +112,6 @@ const useAudioStore = create<AudioStore>((set, get) => ({
     }
   },
 
-  isTrackPlaying: (trackId: string) => {
-    const state = get();
-    return state.activeTrackId === trackId;
-  },
-
   deleteTrack: (trackId: string) => set(state => {
     const filteredTracks = state.tracks.filter(t => t.id !== trackId);
     const updatedTracks = filteredTracks.map((track, index) => ({
@@ -123,8 +129,6 @@ const useAudioStore = create<AudioStore>((set, get) => ({
   }),
 
   reorderPills: (trackId: string, fromIndex: number, toIndex: number) => {
-    console.log('Store reorderPills called:', { trackId, fromIndex, toIndex });
-    
     set(state => {
       const trackIndex = state.tracks.findIndex(t => t.id === trackId);
       if (trackIndex === -1) return state;
@@ -159,19 +163,33 @@ const useAudioStore = create<AudioStore>((set, get) => ({
     }));
   },
 
-  reorderTracks: (fromIndex: number, toIndex: number) => {
-    set(state => {
-      const newTracks = [...state.tracks];
-      const [movedTrack] = newTracks.splice(fromIndex, 1);
-      newTracks.splice(toIndex, 0, movedTrack);
+  setVolume: (volume: number) => {
+    set({ volume: volume });
+    const state = get();
+    state.tracks.forEach((track) => {
+      if (track.wavesurfer) {
+        track.pills.forEach((_, index) => {
+          track.wavesurfer?.setTrackVolume(index, volume);
+        });
+      }
+    });
+  },
 
-      return {
-        tracks: newTracks.map((track, index) => ({
-          ...track,
-          name: `Track ${index + 1}`
-        }))
-      };
-    }, false);
+  setPlayMode: (mode: "None" | "All" | "Individual") => {
+    set({ playMode: mode });
+  },
+
+  setIsExporting: (isExporting: boolean) => set({ isExporting }),
+
+  updatePillStartTime: (trackId: string, pillId: string, startTime: number) => {
+    const state = get();
+    const track = state.tracks.find(t => t.id === trackId);
+    if (track) {
+      const pill = track.pills.find(p => p.id === pillId);
+      if (pill) {
+        pill.startTime = startTime; // Direct mutation without rerender
+      }
+    }
   },
 }))
 

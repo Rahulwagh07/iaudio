@@ -10,6 +10,7 @@ interface CreateMultiTrackParams {
     setWaveSurfer: (trackId: string, instance: MultiTrack) => void;
     reorderPills: (trackId: string, fromIndex: number, toIndex: number) => void;
     removePill: (trackId: string, pillId: string) => void;
+    updatePillStartTime: (trackId: string, pillId: string, startTime: number) => void;
   };
 }
 
@@ -24,7 +25,10 @@ export function createMultiTrack({
       id: pill.id,
       draggable: true,
       startPosition: pill.startTime,
-      volume: 1,
+      eenvelope: [{
+        time: 0,
+        volume: 1
+      }],
       options: {
         waveColor: "hsl(210, 87%, 50%)",
         progressColor: "hsl(210, 87%, 40%)",
@@ -38,22 +42,29 @@ export function createMultiTrack({
       dragBounds: false,
       cursorWidth: 2,
       trackBorderColor: "hsl(210, 60%, 30%)",
+
     }
   );
 
   container.classList.add("multitrack-container");
-  
+
   callbacks.setWaveSurfer(trackId, instance);
   initVerticalDragging(instance);
-  
-  instance.on("reorder-track", ({ fromIndex, toIndex }) => {
+
+  // @ts-ignore
+  instance.on("reorder-track", ({ fromIndex, toIndex }: { fromIndex: number; toIndex: number }) => {
     callbacks.reorderPills(trackId, fromIndex, toIndex);
   });
 
-  instance.on("remove-track", ({ id }) => {
-    callbacks.removePill(trackId, id);
+  // @ts-ignore
+  instance.on("remove-track", ({ id }: { id: string }) => {
+    callbacks.removePill(trackId, id.toString());
   });
 
+  instance.on("start-position-change", ({ id, startPosition }) => {
+    callbacks.updatePillStartTime(trackId, id.toString(), startPosition);
+  });
 
   return instance;
-} 
+}
+
