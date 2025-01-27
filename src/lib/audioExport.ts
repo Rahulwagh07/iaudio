@@ -73,9 +73,13 @@ export class AudioExporter {
     const totalPills = track.pills.length;
     let processedPills = 0;
 
+    // find min start time 
+    const minStartTime = Math.min(...track.pills.map(pill => pill.startTime));
+    const timeOffset = minStartTime < 0 ? Math.abs(minStartTime) : 0;
+
     // cal total duration  
     const totalDuration = Math.max(
-      ...track.pills.map(pill => pill.startTime + pill.duration)
+      ...track.pills.map(pill => (pill.startTime + timeOffset) + pill.duration)
     );
 
     // process multiple audio faster than real time
@@ -98,7 +102,7 @@ export class AudioExporter {
       const source = offlineContext.createBufferSource();
       source.buffer = audioBuffer;
       source.connect(masterGain);
-      source.start(pill.startTime);
+      source.start(pill.startTime + timeOffset);
 
       processedPills++;
       const mixProgress = Math.round((processedPills / totalPills) * 20) + 20;
