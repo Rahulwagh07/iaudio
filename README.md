@@ -11,7 +11,6 @@ An interactive multi-track audio timeline player built with React and wavesurfer
 - [Installation](#installation) 
 - [Tech Stack](#tech-stack) 
 - [Future Enhancements](#future-enhancements) 
-- [Contributing](#contributing) 
 
 ## Features
 
