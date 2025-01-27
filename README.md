@@ -1,50 +1,116 @@
-# React + TypeScript + Vite
+<div align="center">
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# iAudio - Multi-Track Audio Compositions
 
-Currently, two official plugins are available:
+An interactive multi-track audio timeline player built with React and wavesurfer.js, upload audio files and create dynamic audio compositions through intuitive drag-and-drop interfaces and real-time playback controls.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+</div>
 
-## Expanding the ESLint configuration
+## Table of Contents
+- [Features](#features) 
+- [Installation](#installation) 
+- [Tech Stack](#built-with) 
+- [Future Enhancements](#future-enhancements) 
+- [Contributing](#contributing) 
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Features
 
-- Configure the top-level `parserOptions` property like this:
+- 🎹 Create multiple audio tracks
+- 🎵 Drag-and-drop file support
+- 🎚️ Individual track controls
+- 🎯 Drag-and-drop audio positioning
+- 📊 Visual waveform representation
+- 🔄 Real-time track reordering
+- ▶️ Individual track playback
+- ⏯️ Global play/pause functionality
+- 🔊 Master volume control
+- 🎼 Synchronized multi-track playback
+ 
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/Rahulwagh07/iaudio.git
+cd iaudio
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+2. Install dependencies:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+pnpm install
 ```
+
+3. Start the development server:
+
+```bash
+pnpm dev
+```
+
+4. Build for production:
+
+```bash
+# Create optimized production build
+pnpm build
+
+# Preview production build locally
+pnpm preview
+```
+
+## Tech Stack
+ 
+- [React](https://react.dev/) with [TypeScript](https://www.typescriptlang.org/)
+- [Zustand](https://github.com/pmndrs/zustand) for state management
+- [WaveSurfer.js](https://wavesurfer-js.org/) for audio visualization
+- [FFmpeg](https://github.com/ffmpegwasm/ffmpeg.wasm) for audio processing
+- [React DnD](https://react-dnd.github.io/react-dnd/) for drag-and-drop functionality
+- [TailwindCSS](https://tailwindcss.com/) for styling
+- [wavesurfer-multitrack](https://wavesurfer-multitrack.pages.dev/docs/) for multi-track support
+ 
+
+## Architecture  
+
+### State Management
+- Centralized state using Zustand
+- Immutable state updates
+- Action-based state modifications
+
+### Component Structure
+```
+src/
+├── components/        # React components
+├── lib/               # Utility functions and services
+├── store/             # State management
+├── hooks/             # Custom React hooks
+├── types/             # TypeScript definitions
+└── styles/            # CSS styles
+```
+
+ 
+## Future Enhancements
+
+1. **Audio Effects** 
+   - Real-time audio effects processing
+   - Volume control for individual audio within tracks
+
+2. **Enhanced Multi-track Wavesurfer Plugin** 
+   - Implement custom multitrack Wavesurfer plugin with extended features
+   - Extend plugin to support track reordering
+
+3. **Performance Optimizations** 
+   - Web Worker implementation
+   - Audio streaming support
+   - Lazy loading improvements
+ 
+---
+
+<div align="center">
+
+### 🎵 Transform Your Audio Ideas Into Reality 🎵
+
+Give this repo a ⭐ and start mixing your next masterpiece!
+
+</div>
+
+ 
