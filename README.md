@@ -14,12 +14,12 @@ An interactive multi-track audio timeline player built with React and wavesurfer
  
 ## Recent Updates
 
-- Restructured state management using modular slices pattern for better scalability and maintainability
-- Implemented consistent file naming conventions across the project
-- Separated utility functions into dedicated `utils/` and `lib/` directories for better organization
+- Restructured state management using modular slices pattern for better scalability and maintainability.
+- Implemented consistent file naming conventions across the project.
+- Separated utility functions into dedicated `utils/` and `lib/` directories for better organization.
 - Reorganized components into feature-based directories for improved modularity and maintainability.
 - Separated the funtions from the components for better organization and reusability[Like `lib/multitrack/playbackHandler.ts`].
-- Removed the AudioExport feature, mostly is should be on server side.
+- Removed the AudioExport feature, mostly it should be on server side.
 
 ## Features
 
