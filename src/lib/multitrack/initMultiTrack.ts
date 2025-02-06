@@ -1,31 +1,31 @@
 import MultiTrack from "wavesurfer-multitrack";
-import { AudioPill } from "../types";
-import { initVerticalDragging } from "./trackUtils";
+import { Track } from "../../types";
+import { initVerticalDragging } from "./initVerticleDragging";
 
-interface CreateMultiTrackParams {
+interface MultiTrackParams {
   container: HTMLDivElement;
-  pills: AudioPill[];
-  trackId: string;
+  tracks: Track[];
+  multiTrackId: string;
   callbacks: {
-    setWaveSurfer: (trackId: string, instance: MultiTrack) => void;
-    reorderPills: (trackId: string, fromIndex: number, toIndex: number) => void;
-    removePill: (trackId: string, pillId: string) => void;
-    updatePillStartTime: (trackId: string, pillId: string, startTime: number) => void;
+    setWaveSurfer: (multiTrackId: string, instance: MultiTrack) => void;
+    reorderTracks: (multiTrackId: string, fromIndex: number, toIndex: number) => void;
+    removeTrack: (multiTrackId: string, trackId: string) => void;
+    updateTrackStartTime: (multiTrackId: string, trackId: string, startTime: number) => void;
     updateCursorPosition: (wasPlaying: boolean, currentTime: number) => void;
   };
 }
 
-export function createMultiTrack({
+export function initMultiTrack({
   container,
-  pills,
-  trackId,
+  tracks,
+  multiTrackId,
   callbacks,
-}: CreateMultiTrackParams): MultiTrack {
+}: MultiTrackParams): MultiTrack {
   const instance = MultiTrack.create(
-    pills.map((pill) => ({
-      id: pill.id,
+    tracks.map((track) => ({
+      id: track.id,
       draggable: true,
-      startPosition: pill.startTime,
+      startPosition: track.startTime,
       eenvelope: [{
         time: 0,
         volume: 1
@@ -34,8 +34,9 @@ export function createMultiTrack({
         waveColor: "hsl(210, 87%, 50%)",
         progressColor: "hsl(210, 87%, 40%)",
       },
-      url: pill.url,
+      url: track.url,
     })),
+
     {
       container,
       minPxPerSec: 15,
@@ -43,32 +44,32 @@ export function createMultiTrack({
       dragBounds: false,
       cursorWidth: 2,
       trackBorderColor: "hsl(210, 60%, 30%)",
-
     }
   );
 
   container.classList.add("multitrack-container");
-  
-  callbacks.setWaveSurfer(trackId, instance);
+
+  callbacks.setWaveSurfer(multiTrackId, instance);
   initVerticalDragging(instance);
-   
+
   // @ts-ignore
   instance.on("reorder-track", ({ fromIndex, toIndex }: { fromIndex: number; toIndex: number }) => {
     const wasPlaying = instance.isPlaying();
     const currentTime = instance.getCurrentTime();
-    callbacks.reorderPills(trackId, fromIndex, toIndex);
+    callbacks.reorderTracks(multiTrackId, fromIndex, toIndex);
     callbacks.updateCursorPosition(wasPlaying, currentTime);
   });
 
   // @ts-ignore
   instance.on("remove-track", ({ id }: { id: string }) => {
-    callbacks.removePill(trackId, id.toString());
+    console.log("remove-track", id);
+    callbacks.removeTrack(multiTrackId, id);
   });
+
 
   instance.on("start-position-change", ({ id, startPosition }) => {
-    callbacks.updatePillStartTime(trackId, id.toString(), startPosition);
+    callbacks.updateTrackStartTime(multiTrackId, id.toString(), startPosition);
   });
-
   return instance;
 }
 

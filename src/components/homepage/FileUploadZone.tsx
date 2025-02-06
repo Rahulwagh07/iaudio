@@ -1,18 +1,19 @@
 import type React from "react";
 import { useDrop } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
-import useAudioStore from "../store/useAudioStore";
-import { handleFileUpload } from "../lib/fileUpload";
+import { handleFileUpload } from "../../lib/fileUpload";
+import useMultiTrackStore from "../../store";
 
-export default function InitialAudioUpload() {
-  const { addPills, addTrack } = useAudioStore();
+export default function UploadZone() {
+  const addMultiTrack = useMultiTrackStore((state) => state.addMultiTrack);
+  const addTracks = useMultiTrackStore((state) => state.addTracks);
 
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: [NativeTypes.FILE],
     drop: (item: { files: FileList }) => {
       const { files } = handleFileUpload(item.files);
-      const trackId = addTrack();
-      addPills(trackId, files);
+      const multiTrackId = addMultiTrack();
+      addTracks(multiTrackId, files);
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
@@ -27,14 +28,9 @@ export default function InitialAudioUpload() {
         console.log("No files selected");
         return;
       }
-
-      try {
-        const { files: processedFiles } = handleFileUpload(files);
-        const trackId = addTrack();
-        addPills(trackId, processedFiles);
-      } catch (uploadError) {
-        console.log("Error processing files:", uploadError);
-      }
+      const { files: processedFiles } = handleFileUpload(files);
+      const multiTrackId = addMultiTrack();
+      addTracks(multiTrackId, processedFiles);
     } catch (error) {
       console.log("Error in file change handler:", error);
     }

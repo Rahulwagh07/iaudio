@@ -1,10 +1,12 @@
-import useAudioStore from "../store/useAudioStore";
 import { IoAdd } from "react-icons/io5";
 import { FaVolumeUp } from "react-icons/fa";
-import PlayAllTracks from "./PlayAllTracks";
+import useMultiTrackStore from "../../store";
 
 export default function Controls() {
-  const { addTrack, setVolume, volume } = useAudioStore();
+  const addMultiTrack = useMultiTrackStore((state) => state.addMultiTrack);
+  const setVolume = useMultiTrackStore((state) => state.setVolume);
+  const volume = useMultiTrackStore((state) => state.volume);
+
   const handleVolumeChange = (volume: number) => {
     setVolume(volume);
   };
@@ -24,14 +26,13 @@ export default function Controls() {
         />
       </div>
 
-      <PlayAllTracks />
       <button
-        onClick={addTrack}
+        onClick={addMultiTrack}
         className="sm:px-5 px-3 py-3   bg-purple-600 bg-opacity-50 text-white border-2 border-purple-600 rounded-md
           hover:bg-opacity-75 transition-colors duration-200 flex items-center whitespace-nowrap"
       >
         <IoAdd className="w-4 h-4 sm:mr-2" />
-        <span className="hidden sm:block">Add Track</span>
+        <span className="hidden sm:block">New MultiTrack</span>
       </button>
     </div>
   );

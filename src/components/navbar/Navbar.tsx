@@ -1,6 +1,6 @@
-import React from 'react';
-import Logo from './Logo';
-import Controls from './Controls';
+import React from "react";
+import Controls from "./Controls";
+import Logo from "./Logo";
 
 const Navbar: React.FC = () => {
   return (

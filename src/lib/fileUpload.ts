@@ -14,9 +14,9 @@ export const handleFileUpload = (
   options: FileUploadOptions = {}
 ): FileUploadResult => {
   const { maxFiles = 4, acceptedTypes = ACCEPTED_TYPES } = options;
-  
+
   const files = Array.from(fileList)
-    .filter(file => 
+    .filter(file =>
       acceptedTypes.some(type => file.name.toLowerCase().endsWith(type))
     )
     .slice(0, maxFiles);
@@ -32,7 +32,7 @@ export const createFileInput = (
   fileInput.type = "file";
   fileInput.accept = ACCEPTED_TYPES.join(",");
   fileInput.multiple = true;
-  
+
   fileInput.onchange = (e: Event) => {
     const files = (e.target as HTMLInputElement).files;
     if (files) {
@@ -40,32 +40,6 @@ export const createFileInput = (
       onFileSelect(processedFiles);
     }
   };
-  
+
   return fileInput;
-}; 
-
-
-export const getAudioDuration = (file: File): Promise<number> => {
-  return new Promise((resolve, reject) => {
-    const audio = new Audio();
-    const objectUrl = URL.createObjectURL(file);
-    
-    const cleanup = () => {
-      URL.revokeObjectURL(objectUrl);
-      audio.remove();
-    };
-
-    audio.addEventListener('loadedmetadata', () => {
-      const duration = audio.duration;
-      cleanup();
-      resolve(duration);
-    });
-
-    audio.addEventListener('error', (error) => {
-      cleanup();
-      reject(new Error(`Error loading audio file: ${error.message}`));
-    });
-
-    audio.src = objectUrl;
-  });
 };

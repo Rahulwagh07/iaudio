@@ -7,10 +7,19 @@ An interactive multi-track audio timeline player built with React and wavesurfer
 </div>
 
 ## Table of Contents
+- [Recent Updates](#recent-updates)
 - [Features](#features) 
 - [Installation](#installation) 
 - [Tech Stack](#tech-stack) 
-- [Future Enhancements](#future-enhancements) 
+ 
+## Recent Updates
+
+- Restructured state management using modular slices pattern for better scalability and maintainability
+- Implemented consistent file naming conventions across the project
+- Separated utility functions into dedicated `utils/` and `lib/` directories for better organization
+- Reorganized components into feature-based directories for improved modularity and maintainability.
+- Separated the funtions from the components for better organization and reusability[Like `lib/multitrack/playbackHandler.ts`].
+- Removed the AudioExport feature, mostly is should be on server side.
 
 ## Features
 
@@ -20,8 +29,7 @@ An interactive multi-track audio timeline player built with React and wavesurfer
 - 🎯 Drag-and-drop audio positioning
 - 📊 Visual waveform representation
 - 🔄 Real-time track reordering
-- ▶️ Individual track playback
-- ⏯️ Global play/pause functionality
+- ▶️ Individual MultiTrack playback
 - 🔊 Master volume control
 - 🎼 Synchronized multi-track playback
  
@@ -62,7 +70,6 @@ pnpm preview
 - [React](https://react.dev/) with [TypeScript](https://www.typescriptlang.org/)
 - [Zustand](https://github.com/pmndrs/zustand) for state management
 - [WaveSurfer.js](https://wavesurfer-js.org/) for audio visualization
-- [FFmpeg](https://github.com/ffmpegwasm/ffmpeg.wasm) for audio processing
 - [React DnD](https://react-dnd.github.io/react-dnd/) for drag-and-drop functionality
 - [TailwindCSS](https://tailwindcss.com/) for styling
 - [wavesurfer-multitrack](https://wavesurfer-multitrack.pages.dev/docs/) for multi-track support
@@ -79,28 +86,14 @@ pnpm preview
 ```
 src/
 ├── components/        # React components
-├── lib/               # Utility functions and services
+├── lib/               # Services
 ├── store/             # State management
 ├── hooks/             # Custom React hooks
 ├── types/             # TypeScript definitions
+├── utils/             # Helper functions
 └── styles/            # CSS styles
 ```
 
- 
-## Future Enhancements
-
-1. **Audio Effects** 
-   - Real-time audio effects processing
-   - Volume control for individual audio within tracks
-
-2. **Enhanced Multi-track Wavesurfer Plugin** 
-   - Implement custom multitrack Wavesurfer plugin with extended features
-   - Extend plugin to support track reordering
-
-3. **Performance Optimizations** 
-   - Web Worker implementation
-   - Audio streaming support
-   - Lazy loading improvements
  
 ---
 

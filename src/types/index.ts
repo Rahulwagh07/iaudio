@@ -1,6 +1,6 @@
 import MultiTrack from 'wavesurfer-multitrack'
 
-export interface AudioPill {
+export interface Track {
   id: string;
   file: File;
   url: string;
@@ -9,44 +9,26 @@ export interface AudioPill {
   duration: number;
 }
 
-export interface AudioTrack {
+export interface CustomMultiTrack {
   id: string;
-  pills: AudioPill[];
+  tracks: Track[];
   name: string;
   wavesurfer?: MultiTrack;
 }
 
-export interface AudioStore {
-  tracks: AudioTrack[]
-  isPlaying: boolean
-  activeTrackId: string | null
+export interface MultiTrackState {
+  multiTracks: CustomMultiTrack[]
+  activeMultiTrackId: string | null
   volume: number
-  playMode: PlayMode
-  isExporting: boolean
   setVolume: (volume: number) => void
-  addTrack: () => string
-  addPills: (trackId: string, files: File[]) => void
-  setWaveSurfer: (trackId: string, wavesurfer: MultiTrack | null) => void
-  playTrack: (trackId: string) => void
-  pauseTrack: (trackId: string) => void
-  deleteTrack: (trackId: string) => void
-  reorderPills: (trackId: string, fromIndex: number, toIndex: number) => void
-  removePill: (trackId: string, pillId: string) => void
-  setPlayMode: (mode: "All" | "Individual" | "None") => void
-  setIsExporting: (isExporting: boolean) => void
-  updatePillStartTime: (trackId: string, pillId: string, startTime: number) => void
+  addMultiTrack: () => string
+  addTracks: (multiTrackId: string, files: File[]) => Promise<void>
+  setWaveSurfer: (multiTrackId: string, wavesurfer: MultiTrack | null) => void
+  playMultiTrack: (multiTrackId: string) => void
+  pauseMultiTrack: (multiTrackId: string) => void
+  deleteMultiTrack: (multiTrackId: string) => void
+  reorderTracks: (multiTrackId: string, fromIndex: number, toIndex: number) => void
+  removeTrack: (multiTrackId: string, trackId: string) => void
+  updateTrackStartTime: (multiTrackId: string, trackId: string, startTime: number) => void
 }
 
-export type PlayMode = "All" | "Individual" | "None"
-
-export interface AudioExportProgress {
-  status: 'preparing' | 'mixing' | 'encoding' | 'downloading' | 'complete' | 'error';
-  progress: number;
-}
-
-export interface AudioExportStore {
-  isExporting: boolean
-  exportProgress: AudioExportProgress
-  setIsExporting: (isExporting: boolean) => void
-  setExportProgress: (progress: AudioExportProgress) => void
-}

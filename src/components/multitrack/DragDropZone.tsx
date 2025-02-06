@@ -1,22 +1,22 @@
 import { useDrop } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
-import useAudioStore from "../store/useAudioStore";
 import { IoCloudUpload } from "react-icons/io5";
-import { handleFileUpload } from "../lib/fileUpload";
+import { handleFileUpload } from "../../lib/fileUpload";
+import useMultiTrackStore from "../../store";
 
-interface AudioDropZoneProps {
-  trackId: string;
+interface DragDropZoneProps {
+  multiTrackId: string;
 }
 
-const AudioDropZone = ({ trackId }: AudioDropZoneProps) => {
-  const { addPills } = useAudioStore();
+const DragDropZone = ({ multiTrackId }: DragDropZoneProps) => {
+  const addTracks = useMultiTrackStore((state) => state.addTracks);
 
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: [NativeTypes.FILE],
     drop: (item: { files: FileList }) => {
       const { files } = handleFileUpload(item.files);
       if (files.length > 0) {
-        addPills(trackId, files);
+        addTracks(multiTrackId, files);
       }
     },
     collect: (monitor) => ({
@@ -59,5 +59,4 @@ const AudioDropZone = ({ trackId }: AudioDropZoneProps) => {
     </>
   );
 };
-
-export default AudioDropZone;
+export default DragDropZone;
