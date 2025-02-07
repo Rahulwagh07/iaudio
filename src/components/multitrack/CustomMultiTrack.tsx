@@ -106,7 +106,6 @@ const CustomMultiTrack = memo(
 
     const updateCursorPosition = (wasPlaying: boolean, currentTime: number) => {
       if (!multitrackRef.current) return;
-      console.log("updateCursorPosition", currentTime);
       setTimeout(() => {
         multitrackRef.current?.setTime(currentTime);
         if (wasPlaying) {

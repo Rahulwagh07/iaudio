@@ -30,7 +30,6 @@ export const handlePlayMultiTrack = ({
     const totalDuration = containerRef.current
       ? calTimeLineDuration(containerRef.current)
       : 0;
-    console.log("totalDuration", totalDuration);
 
     if (currentTime >= totalDuration && totalDuration !== 0) {
       multitrackRef.current.setTime(0);

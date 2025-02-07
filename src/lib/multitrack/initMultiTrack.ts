@@ -62,7 +62,6 @@ export function initMultiTrack({
 
   // @ts-ignore
   instance.on("remove-track", ({ id }: { id: string }) => {
-    console.log("remove-track", id);
     callbacks.removeTrack(multiTrackId, id);
   });
 
